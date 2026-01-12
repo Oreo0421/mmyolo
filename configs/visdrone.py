@@ -31,7 +31,10 @@ class_name = ('pedestrian', 'people', 'bicycle', 'car', 'van',
 num_classes = len(class_name)
 metainfo = dict(
     classes=class_name,
-    palette=[(220, 20, 60)]  # 画图时候的颜色，随便设置即可
+     palette=[
+        (220, 20, 60), (119, 11, 32), (0, 0, 142), (0, 0, 230), (106, 0, 228),
+        (0, 60, 100), (0, 80, 100), (0, 0, 70), (0, 0, 192), (250, 170, 30)
+    ]  # 画图时候的颜色，随便设置即可
 )
 
 train_cfg = dict(
