@@ -26,8 +26,18 @@ anchors = [  # 此处已经根据数据集特点更新了 anchor
     [(353, 337), (539, 341), (443, 432)]  # P5/32
 ]
 
-class_name = ('pedestrian', 'people', 'bicycle', 'car', 'van',
-    'truck', 'tricycle', 'awning-tricycle', 'bus', 'motor' )  # 根据 class_with_id.txt 类别信息，设置 class_name
+class_name = (
+    'car',
+    'people',
+    'van',
+    'truck',
+    'motor',
+    'bicycle',
+    'tricycle',
+    'awning-tricycle',
+    'pedestrian',
+    'bus'
+) # 根据 class_with_id.txt 类别信息，设置 class_name
 num_classes = len(class_name)
 metainfo = dict(
     classes=class_name,
