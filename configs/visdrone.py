@@ -26,7 +26,8 @@ anchors = [  # 此处已经根据数据集特点更新了 anchor
     [(353, 337), (539, 341), (443, 432)]  # P5/32
 ]
 
-class_name = ('VisDrone', )  # 根据 class_with_id.txt 类别信息，设置 class_name
+class_name = ('pedestrian', 'people', 'bicycle', 'car', 'van',
+    'truck', 'tricycle', 'awning-tricycle', 'bus', 'motor' )  # 根据 class_with_id.txt 类别信息，设置 class_name
 num_classes = len(class_name)
 metainfo = dict(
     classes=class_name,
@@ -85,7 +86,7 @@ train_dataloader = dict(
             metainfo=metainfo,
             ann_file='annotations/train.json',
             data_prefix=dict(img='images/'),
-            filter_cfg=dict(filter_empty_gt=False, min_size=32),
+            filter_cfg=dict(filter_empty_gt=False, min_size=1),
             pipeline=train_pipeline)))
 
 val_dataloader = dict(
@@ -110,3 +111,5 @@ default_hooks = dict(
         save_best='auto'),
     param_scheduler=dict(max_epochs=max_epochs),
     logger=dict(type='LoggerHook', interval=10))
+
+visualizer = dict(vis_backends=[dict(type='LocalVisBackend'), dict(type='TensorboardVisBackend')])
