@@ -17,14 +17,10 @@ save_epoch_intervals = 2  # 每 interval 轮迭代进行一次保存一次权重
 # 根据自己的 GPU 情况，修改 base_lr，修改的比例是 base_lr_default * (your_bs / default_bs)
 base_lr = _base_.base_lr / 4
 
-# Image scale - YOLOv5 default is 640x640
-img_scale = (640, 640)
+# Image scale - YOLOv5 default is 640x640,change it to VisDrone scale
+img_scale = (960, 960)
 
-anchors = [  # 此处已经根据数据集特点更新了 anchor
-    [(68, 69), (154, 91), (143, 162)],  # P3/8
-    [(242, 160), (189, 287), (391, 207)],  # P4/16
-    [(353, 337), (539, 341), (443, 432)]  # P5/32
-]
+anchors =[[(3, 4), (4, 9), (7, 5)], [(7, 13), (12, 8), (21, 12)], [(13, 20), (29, 23), (46, 42)]]
 
 class_name = (
     'car',
@@ -57,8 +53,17 @@ model = dict(
     bbox_head=dict(
         head_module=dict(num_classes=num_classes),
         prior_generator=dict(base_sizes=anchors),
-        loss_cls=dict(loss_weight=0.5 *
-                      (num_classes / 80 * 3 / _base_.num_det_layers))))
+        loss_cls=dict(
+            loss_weight=0.5 * (num_classes / 80 * 3 / _base_.num_det_layers)
+        )
+    ),
+    test_cfg=dict(
+        score_thr=0.02,
+        nms=dict(type='nms', iou_threshold=0.65),
+        max_per_img=300
+    )
+)
+
 
 # Complete train pipeline with proper resizing
 train_pipeline = [
@@ -101,13 +106,25 @@ train_dataloader = dict(
             data_prefix=dict(img='images/'),
             filter_cfg=dict(filter_empty_gt=False, min_size=1),
             pipeline=train_pipeline)))
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='mmdet.Resize', scale=img_scale, keep_ratio=True),
+    dict(type='mmdet.Pad', size=img_scale, pad_val=dict(img=(114, 114, 114))),
+    dict(
+        type='mmdet.PackDetInputs',
+        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape', 'scale_factor')
+    )
+]
 
 val_dataloader = dict(
     dataset=dict(
         metainfo=metainfo,
         data_root=data_root,
         ann_file='annotations/val.json',
-        data_prefix=dict(img='images/')))
+        data_prefix=dict(img='images/'),
+        pipeline=test_pipeline
+    )
+)
 
 test_dataloader = val_dataloader
 
